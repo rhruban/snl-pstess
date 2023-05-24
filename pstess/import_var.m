@@ -13,6 +13,16 @@
 
 global g;  % declaring struct of global variables
 
+% playin
+if exist('playin_con','var')
+    g.playin.playin_con = [playin_con{:,1}]';
+    g.playin.dfile = playin_con(:,2);
+    clear('playin_con');
+else
+    g.playin.playin_con = [];
+end
+
+
 % lmod
 if exist('lmod_con','var')
     g.lmod.lmod_con = lmod_con;

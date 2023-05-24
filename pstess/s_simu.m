@@ -163,6 +163,21 @@ else
 end
 
 if strcmp(lfs,'y')
+    %----------------------------------------------------------------------
+    % Load playin initial data points
+    % This section of code forces a 2 bus system where bus 1 is the pmu
+    % bus. This is inadequate
+    % The playin initialization requires the swing bus PQ to be held as
+    % well as the V and delta. The current newton raphson cannot do this.
+    % Therefore we feed it the desired solution and it solves instantly.
+    if ~isempty(g.playin.playin_con)
+        % Currently this is configured to so bus 1 is the location of the
+        % infinite machine (real-life PMU location)
+        g.playin.PMU=load(g.playin.dfile{1});
+        bus(1,2:5)= [g.playin.PMU.V0,g.playin.PMU.ang0,-g.playin.PMU.P0,-g.playin.PMU.Q0];
+        bus(2,2:5)= [g.playin.PMU.V20,g.playin.PMU.ang20,g.playin.PMU.P20,g.playin.PMU.Q20];
+    end
+    %----------------------------------------------------------------------
     if isempty(g.dc.dcsp_con)
         % ac power flow
         g.dc.n_conv = 0;

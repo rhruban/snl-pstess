@@ -61,37 +61,59 @@ if (Flag == 0)
     % Note: there are no differential equations, just make the DFE zero
     g.mac.ivmmod_data = nan;  % not used
     for k = 1:g.mac.n_ivm
-        delta_statesIni{k}(1,1) = 0;
-        E_statesIni{k}(1,1) = 0;
+        if  (g.playin.n_playin~=0)&&(any(g.mac.mac_ivm_idx(k)==g.playin.playin_ivm_idx))
+            % play_in gen dynamics (do not change)
+            delta_statesIni{k}(1,1) = 0;
+            E_statesIni{k}(1,1) = 0;
+        else
+            % other IVM dynamics
+            delta_statesIni{k}(1,1) = 0;
+            E_statesIni{k}(1,1) = 0;
+        end
+
     end
 
 %% Calculate dc and Ec
 elseif (Flag == 1)
     for k = 1:g.mac.n_ivm
-        if (Time(kSim) > 1)
-            dE = 0.1;
+        if  (g.playin.n_playin~=0)&&(any(g.mac.mac_ivm_idx(k)==g.playin.playin_ivm_idx))
+            % play_in gen dynamics (do not change)
+            Ec(k) = abs(g.playin.PMU.v(kSim));
+            dc(k) = angle(g.playin.PMU.v(kSim));
         else
-            dE = 0;
-        end
+            % other IVM dynamics
+            if (Time(kSim) > 1)
+                dE = 0.1;
+            else
+                dE = 0;
+            end
 
-        % edprime(,1) is initial internal voltage E
-        Ec(k) = g.mac.edprime(g.mac.mac_ivm_idx(k),1) + dE;
-        if (Time(kSim) > 4)
-            da = 0.2;
-        else
-            da = 0;
-        end
+            % edprime(,1) is initial internal voltage E
+            Ec(k) = g.mac.edprime(g.mac.mac_ivm_idx(k),1) + dE;
+            if (Time(kSim) > 4)
+                da = 0.2;
+            else
+                da = 0;
+            end
 
-        % mac_ang(,1) is initial internal voltage d
-        dc(k) = g.mac.mac_ang(g.mac.mac_ivm_idx(k),1) + da;
+            % mac_ang(,1) is initial internal voltage d
+            dc(k) = g.mac.mac_ang(g.mac.mac_ivm_idx(k),1) + da;
+        end
     end
 
 %% Calculate derivatives
 elseif (Flag == 2)
     % No differential equations for this example, set derivatives to zero
     for k = 1:g.mac.n_ivm
-        ddelta_states{k}(1,1) = 0;
-        dE_states{k}(1,1) = 0;
+        if  (g.playin.n_playin~=0)&&(any(g.mac.mac_ivm_idx(k)==g.playin.playin_ivm_idx))
+            % play_in gen dynamics (do not change)
+            ddelta_states{k}(1,1) = 0;
+            dE_states{k}(1,1) = 0;
+        else
+            % other IVM dynamics
+            ddelta_states{k}(1,1) = 0;
+            dE_states{k}(1,1) = 0;
+        end
     end
 end
 

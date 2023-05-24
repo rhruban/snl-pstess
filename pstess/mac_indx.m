@@ -99,6 +99,17 @@ else
     g.mac.n_ivm = 0;
 end
 
+% Playin IVM
+if ~isempty(g.playin.playin_con)
+    g.playin.playin_ivm_idx = find((g.mac.mac_con(:,16) == 0) & (g.playin.playin_con == 1));
+    if ~isempty(g.playin.playin_ivm_idx)
+        g.playin.n_playin = length(g.playin.playin_ivm_idx);
+    else
+        g.playin.n_playin = 0;
+    end
+end
+
+% Infinite Bus
 if (g.mac.n_ib ~= 0)
     ib_em = find(g.mac.mac_con(g.mac.mac_ib_idx,6) == 0);
     if ~isempty(ib_em)
