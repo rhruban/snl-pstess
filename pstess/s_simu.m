@@ -171,7 +171,7 @@ if strcmp(lfs,'y')
     % well as the V and delta. The current newton raphson cannot do this.
     % Therefore we feed it the desired solution and it solves instantly.
     if ~isempty(g.playin.playin_con)
-        % Currently this is configured to so bus 1 is the location of the
+        % Currently this is configured to so bus row 1 is the location of the
         % infinite machine (real-life PMU location)
         g.playin.PMU=load(g.playin.dfile{1});
         bus(1,2:5)= [g.playin.PMU.V0,g.playin.PMU.ang0,-g.playin.PMU.P0,-g.playin.PMU.Q0];
