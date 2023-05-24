@@ -110,7 +110,8 @@ disp('non-linear simulation')
 if batch_mode
     [dfile,pathname] = get_path();
 else
-    [dfile,pathname] = uigetfile('d*.m','Select Data File');
+    [~,pathname] = get_path();
+    [dfile,pathname] = uigetfile('d*.m','Select Data File',pathname);
 end
 
 % import base case data
