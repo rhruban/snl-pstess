@@ -214,13 +214,13 @@ n_tot = g.mac.n_mac + g.ind.n_mot + g.igen.n_ig;
 n_gm = g.mac.n_mac + g.ind.n_mot;
 
 % construct simulation switching sequence as defined in sw_con
-tswitch(1) = g.sys.sw_con(1,1);
 k = 1;
 kdc = 1;
 n_switch = length(g.sys.sw_con(:,1));
 k_inc = zeros(n_switch-1,1);
 k_incdc = k_inc;
 t_switch = zeros(n_switch,1);
+t_switch(1) = g.sys.sw_con(1,1);
 h = t_switch;
 h_dc = h;
 
@@ -260,7 +260,7 @@ end
 
 k = sum(k_inc) + 1;                          % total number of time steps in the sim.
 t(k) = g.sys.sw_con(n_switch,1);
-
+g.t=t;
 [n,~] = size(g.mac.mac_con);
 n_bus = length(bus(:,1));
 
