@@ -9,8 +9,8 @@ bus = [ ...
 
 
 line = [ ...
-% bus bus r       x       y    tapratio tapphase tapmax tapmin tapsize
-  1   2   0.0035  0.1797  0.0  1.0      0        0      0      0];%xformer
+% bus bus r        x       y    tapratio tapphase tapmax tapmin tapsize
+  1   2   0.00348  0.179742  0.0  1.0      0        0      0      0];%xformer
 
 %Both generator parameters are from the example machine in chap 4 of
 %Anderson and Fouad with a salient pole assumption.
@@ -20,7 +20,7 @@ mac_con = [ ...
 % num bus base  NA   r_a    NA  x'_d    NA    Td     Tv       NA     NA    NA    NA    NA     H = 0  NA  NA bus
    1   1  100   0.0  0.0    0   1e-9    0     0.0009 0.0009   0      0     0.0   0.0   0.0    0      0   0   1   0      0;   % don't change (playin machine)
 % num bus base  x_l  r_a    x_d  x'_d   x"_d  T'_do  T"_do    x_q    x'_q  x"_q  T'_qo T"_qo  H      d_0 d_1 bus S1     S12 
-   2   2  100   0.12 0.0019 2.05 0.42   0.24  5.8    0.015    1.95   0.65  0.24  0.6   0.03   3.25   0   0   2   0.125  0.33]; % what about x comp
+   2   2  100   0.12 0.0019 2.05 0.42   0.24  5.8    0.015    1.95   0.65  0.24  0.6   0.03   3.25   0   0   2   0.125  0.33]; % what about r and x comp (0,0.063)
   
 %Exciter
 %From p. 1137 of Kundur
@@ -29,7 +29,7 @@ mac_con = [ ...
 %     0    2    0.02  200   0.02  0.02  0.32  10    -10]; %Fast static exciter, with TGR
 % exc_con = [
 % % Type Mac TR    KVP TA    KVI          KC   VRmax VRmin KE   TE   E1   SE1    E2   SE2   KVD   TVD   KD   Vimax  limflg
-%   4    2   0.02  200 0.02  0.00000001   0.15 10    -10   1.0  1.5  6.5  0.3    9    3     60    0.02  0.45 999    0.0;];
+%   4    2   0.02  200 0.02  0.00000000   0.15 10    -10   1.0  1.5  6.5  0.3    9    3     60    0.02  0.45 999    0.0;];
 
 %PSS
 %Designed using the "large-inertia, infinite-bus" method in Roger's book and
