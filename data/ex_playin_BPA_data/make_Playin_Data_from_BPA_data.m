@@ -108,7 +108,7 @@ ang0 = angle(D.Vt{1}(nR(1))/Vbase)/pi*180
 
 %% Initial bus matrix
 y=[-P0;-Q0];
-ymhos=-1/(0.0035+ 1i*0.1797);
+ymhos=-1/(0.00348+ 1i*0.179742);
 ymag=abs(ymhos);
 yang=angle(ymhos)/pi*180;
 f=@(x) [V0*x(1)*ymag*cosd(ang0-x(2)-yang)+V0*V0*ymag*cosd(ang0-ang0-yang+180);...
