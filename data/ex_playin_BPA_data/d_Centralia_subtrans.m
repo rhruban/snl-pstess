@@ -27,9 +27,9 @@ mac_con = [ ...
 % exc_con = [...
 % %  type mach  T_R   K_A   T_A   T_B   T_C   Vmax  Vmin
 %     0    2    0.02  200   0.02  0.02  0.32  10    -10]; %Fast static exciter, with TGR
-% exc_con = [
-% % Type Mac TR    KVP TA    KVI          KC   VRmax VRmin KE   TE   E1   SE1    E2   SE2   KVD   TVD   KD   Vimax  limflg
-%   4    2   0.02  200 0.02  0.00000000   0.15 10    -10   1.0  1.5  6.5  0.3    9    3     60    0.02  0.45 999    0.0;];
+exc_con = [
+% Type Mac TR    KVP TA    KVI   KC   VRmax VRmin KE   TE   E1   SE1    E2   SE2   KVD   TVD   KD   Vimax  limflg
+  4    2   0.02  200 0.02  0     0.15 10    -10   1.0  1.5  6.5  0.3    9    3     60    0.02  0.45 999    0.0;];
 
 %PSS
 %Designed using the "large-inertia, infinite-bus" method in Roger's book and
@@ -80,10 +80,10 @@ mac_con = [ ...
 %% Auto replace this?
 sw_con = [...
 0         0    0    0    0    0    1/600;%sets intitial time step
-28.8       1    2    0    0    6    1/600;
-28.9       0    0    0    0    0    1/600;
-29         0    0    0    0    0    1/600]; % end simulation
+17.8       1    2    0    0    6    1/600;
+17.9       0    0    0    0    0    1/600;
+18         0    0    0    0    0    1/600]; % end simulation
 
 playin_con = {
-    1 '/Users/ron/Documents/Ron/PhD Research/Code/pst_val/data/ex_playin_BPA_data/d_centralia_play_1223239to1225021.mat';
+    1 '/Users/ron/Documents/Ron/PhD Research/Code/pst_val/data/ex_playin_BPA_data/d_centralia_play_582841to583921_demo.mat';
     0 ''};
