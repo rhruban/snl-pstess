@@ -71,34 +71,35 @@ if (flag == 0)   % initialization
 
         % Initialize V_E
         % Assume 0 < I_N < 0.433
-        g.exc.Efd(g.exc.smppi_idx,1) = g.mac.vex(n,1)./g.mac.mac_spd(n,1)+0.5774.*g.exc.exc_con(g.exc.smppi_idx,7).*g.mac.fldcur(n,1); % Calc V_E
+        %g.exc.Efd(g.exc.smppi_idx,1) = g.mac.vex(n,1)./g.mac.mac_spd(n,1)+0.5774.*g.exc.exc_con(g.exc.smppi_idx,7).*g.mac.fldcur(n,1); % Calc V_E
+        g.exc.Efd(g.exc.smppi_idx,1) = g.mac.vex(n,1)./g.mac.mac_spd(n,1);
 
-        % 0.433 < I_N < 0.75
-        I_N = g.exc.exc_con(g.exc.smppi_idx,7).*g.mac.fldcur(n,1)./g.exc.Efd(g.exc.smppi_idx,1);
-        FEX0 = find(I_N > 0.433);
-        if ~isempty(FEX0)
-            g.exc.Efd(g.exc.smppi_idx(FEX0),1) = sqrt(((g.mac.vex(n(FEX0),1)./g.mac.mac_spd(n(FEX0),1)).^2+(g.exc.exc_con(g.exc.smppi_idx(FEX0),7).*g.mac.fldcur(n(FEX0),1)).^2)./0.75);
-        end
-
-        % 0.75 < I_N < 1
-        I_N = g.exc.exc_con(g.exc.smppi_idx,7).*g.mac.fldcur(n,1)./g.exc.Efd(g.exc.smppi_idx,1);
-        FEX1 = find(I_N > 0.75);
-        if ~isempty(FEX1)
-            g.exc.Efd(g.exc.smppi_idx(FEX1),1) = g.mac.vex(n(FEX1),1)./g.mac.mac_spd(n(FEX1),1)./1.732+g.exc.exc_con(g.exc.smppi_idx(FEX1),7).*g.mac.fldcur(n(FEX1),1);
-        end
-
-        % I_N > 1
-        I_N = g.exc.exc_con(g.exc.smppi_idx,7).*g.mac.fldcur(n,1)./g.exc.Efd(g.exc.smppi_idx,1);
-        FEX2 = find(I_N > 1);
-        if ~isempty(FEX2)
-            error('exc_exac8b: F_EX is zero because In is greater than 1');
-        end
-
-        % I_N < 0
-        FEX3 = find(I_N < 0);
-        if ~isempty(FEX3)
-            error('exc_exac8b: I_N is negative');
-        end
+        % % 0.433 < I_N < 0.75
+        % I_N = g.exc.exc_con(g.exc.smppi_idx,7).*g.mac.fldcur(n,1)./g.exc.Efd(g.exc.smppi_idx,1);
+        % FEX0 = find(I_N > 0.433);
+        % if ~isempty(FEX0)
+        %     g.exc.Efd(g.exc.smppi_idx(FEX0),1) = sqrt(((g.mac.vex(n(FEX0),1)./g.mac.mac_spd(n(FEX0),1)).^2+(g.exc.exc_con(g.exc.smppi_idx(FEX0),7).*g.mac.fldcur(n(FEX0),1)).^2)./0.75);
+        % end
+        % 
+        % % 0.75 < I_N < 1
+        % I_N = g.exc.exc_con(g.exc.smppi_idx,7).*g.mac.fldcur(n,1)./g.exc.Efd(g.exc.smppi_idx,1);
+        % FEX1 = find(I_N > 0.75);
+        % if ~isempty(FEX1)
+        %     g.exc.Efd(g.exc.smppi_idx(FEX1),1) = g.mac.vex(n(FEX1),1)./g.mac.mac_spd(n(FEX1),1)./1.732+g.exc.exc_con(g.exc.smppi_idx(FEX1),7).*g.mac.fldcur(n(FEX1),1);
+        % end
+        % 
+        % % I_N > 1
+        % I_N = g.exc.exc_con(g.exc.smppi_idx,7).*g.mac.fldcur(n,1)./g.exc.Efd(g.exc.smppi_idx,1);
+        % FEX2 = find(I_N > 1);
+        % if ~isempty(FEX2)
+        %     error('exc_exac8b: F_EX is zero because In is greater than 1');
+        % end
+        % 
+        % % I_N < 0
+        % FEX3 = find(I_N < 0);
+        % if ~isempty(FEX3)
+        %     error('exc_exac8b: I_N is negative');
+        % end
 
         % check E_fd >= 0 !!!
 
@@ -191,7 +192,7 @@ if (flag == 1)   % network interface computation
             error('exc_exac8b: I_N is negative');
         end
 
-        g.mac.vex(n,k) = g.exc.Efd(g.exc.smppi_idx,k).*g.mac.mac_spd(n,k).*Fex;
+        g.mac.vex(n,k) = g.exc.Efd(g.exc.smppi_idx,k).*g.mac.mac_spd(n,k);%.*Fex;
     end
 end
 
