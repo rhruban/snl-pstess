@@ -113,7 +113,7 @@ if (flag == 0)   % initialization
         g.exc.exc_pot(g.exc.smppi_idx,2) = (-log(g.exc.exc_con(g.exc.smppi_idx,13))+log(g.exc.exc_con(g.exc.smppi_idx,15)))...
             ./(g.exc.exc_con(g.exc.smppi_idx,14)-g.exc.exc_con(g.exc.smppi_idx,12));
         % Se
-        Se = g.exc.exc_pot(g.exc.smppi_idx,1).*exp(g.exc.exc_pot(g.exc.smppi_idx,2).*g.exc.Efd(g.exc.smppi_idx,1));
+        Se = 0; %g.exc.exc_pot(g.exc.smppi_idx,1).*exp(g.exc.exc_pot(g.exc.smppi_idx,2).*g.exc.Efd(g.exc.smppi_idx,1));
 
         % need if then for no Saturation !!!
 
@@ -279,7 +279,7 @@ if (flag == 2)   % exciter dynamics calculation
         
 
         %need Se if then statement
-        Se = g.exc.exc_pot(g.exc.smppi_idx,1).*exp(g.exc.exc_pot(g.exc.smppi_idx,2).*g.exc.Efd(g.exc.smppi_idx,k));
+        Se = 0; %g.exc.exc_pot(g.exc.smppi_idx,1).*exp(g.exc.exc_pot(g.exc.smppi_idx,2).*g.exc.Efd(g.exc.smppi_idx,k));
 
         g.exc.dEfd(g.exc.smppi_idx,k) = ...
             (g.exc.V_R(g.exc.smppi_idx,k)-g.exc.exc_con(g.exc.smppi_idx,18).*g.mac.fldcur(n,k)-(g.exc.exc_con(g.exc.smppi_idx,10)+Se).*g.exc.Efd(g.exc.smppi_idx,k)) ...
