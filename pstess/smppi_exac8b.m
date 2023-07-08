@@ -66,7 +66,8 @@ if (flag == 0)   % initialization
     % V_As        -- integrator state
     % V_TR        -- input filter state
     % exc_pot(,3) -- reference voltage
-    if (g.exc.n_smppi ~= 0)
+
+    if (g.exc.n_smppi ~= 0) % check for exciters
         n = g.mac.mac_int(g.exc.exc_con(g.exc.smppi_idx,2)); % machine indexer
 
         % Initialize V_E
@@ -105,24 +106,37 @@ if (flag == 0)   % initialization
 
 
         % Saturation Initialization
-        % add if else for providing A and B vice Se and E
+        % Quadratic S(x) = B(x-A)^2
+        g.exc.exc_con(g.exc.smppi_idx,15)
         % A
-        g.exc.exc_pot(g.exc.smppi_idx,1) = exp((log(g.exc.exc_con(g.exc.smppi_idx,13)).*g.exc.exc_con(g.exc.smppi_idx,14)-log(g.exc.exc_con(g.exc.smppi_idx,15)).*g.exc.exc_con(g.exc.smppi_idx,12))...
-            ./(g.exc.exc_con(g.exc.smppi_idx,14)-g.exc.exc_con(g.exc.smppi_idx,12)));
+        g.exc.exc_pot(g.exc.smppi_idx,1) = (sqrt(g.exc.exc_con(g.exc.smppi_idx,13)./g.exc.exc_con(g.exc.smppi_idx,15)).*g.exc.exc_con(g.exc.smppi_idx,14) - g.exc.exc_con(g.exc.smppi_idx,12))...
+            ./(sqrt(g.exc.exc_con(g.exc.smppi_idx,13)./g.exc.exc_con(g.exc.smppi_idx,15)) - 1);
         % B
-        g.exc.exc_pot(g.exc.smppi_idx,2) = (-log(g.exc.exc_con(g.exc.smppi_idx,13))+log(g.exc.exc_con(g.exc.smppi_idx,15)))...
-            ./(g.exc.exc_con(g.exc.smppi_idx,14)-g.exc.exc_con(g.exc.smppi_idx,12));
-        % Se
-        Se = 0; %g.exc.exc_pot(g.exc.smppi_idx,1).*exp(g.exc.exc_pot(g.exc.smppi_idx,2).*g.exc.Efd(g.exc.smppi_idx,1));
+        g.exc.exc_pot(g.exc.smppi_idx,2) = g.exc.exc_con(g.exc.smppi_idx,13)./(g.exc.exc_con(g.exc.smppi_idx,12)-g.exc.exc_pot(g.exc.smppi_idx,1)).^2;
 
-        % need if then for no Saturation !!!
+        % get rid of nan and inf A and B cause by zeros for S1 and S12
+        An_indx = find(isnan(g.exc.exc_pot(g.exc.smppi_idx,1)));
+        g.exc.exc_pot(g.exc.smppi_idx(An_indx),1) = zeros(length(An_indx),1);
+        Ai_indx = find(isinf(g.exc.exc_pot(g.exc.smppi_idx,1)));
+        g.exc.exc_pot(g.exc.smppi_idx(Ai_indx),1) = zeros(length(Ai_indx),1);
 
-        % need if then V_E < A !!!
+        Bn_indx = find(isnan(g.exc.exc_pot(g.exc.smppi_idx,2)));
+        g.exc.exc_pot(g.exc.smppi_idx(Bn_indx),2) = zeros(length(Bn_indx),1);
+        Bi_indx = find(isinf(g.exc.exc_pot(g.exc.smppi_idx,2)));
+        g.exc.exc_pot(g.exc.smppi_idx(Bi_indx),2) = zeros(length(Bi_indx),1);
 
+        %S e
+        %Se = 0; to remove all sats
+        Se = g.exc.exc_pot(g.exc.smppi_idx,2).*(g.exc.Efd(g.exc.smppi_idx,1) - g.exc.exc_pot(g.exc.smppi_idx,1)).^2;
+
+        % zero Se if V_E < A 
+        lowVE_indx = find(g.exc.Efd(g.exc.smppi_idx,1) < g.exc.exc_pot(g.exc.smppi_idx,1));
+        Se(lowVE_indx) = zeros(length(lowVE_indx),1);
 
         % output of transducer, state
         g.exc.V_TR(g.exc.smppi_idx,1) = g.mac.eterm(n,1);
-        % need v_comp calc !!!
+
+        % TODO v_comp calc 
 
         % output of Ta, state
         g.exc.V_R(g.exc.smppi_idx,1) = g.exc.exc_con(g.exc.smppi_idx,18).*g.mac.fldcur(n,1) + (g.exc.exc_con(g.exc.smppi_idx,10) + Se).*g.exc.Efd(g.exc.smppi_idx,1);
@@ -151,7 +165,7 @@ if (flag == 0)   % initialization
 
         end
 
-        % should I check intit within limiters??????????????????????????
+        % TODO should I check intit within limiters?
 
     end
 end
@@ -278,8 +292,13 @@ if (flag == 2)   % exciter dynamics calculation
         end
         
 
-        %need Se if then statement
-        Se = 0; %g.exc.exc_pot(g.exc.smppi_idx,1).*exp(g.exc.exc_pot(g.exc.smppi_idx,2).*g.exc.Efd(g.exc.smppi_idx,k));
+        %S e
+        %Se = 0; to remove all sats
+        Se = g.exc.exc_pot(g.exc.smppi_idx,2).*(g.exc.Efd(g.exc.smppi_idx,k) - g.exc.exc_pot(g.exc.smppi_idx,1)).^2;
+
+        % zero Se if V_E < A 
+        lowVE_indx = find(g.exc.Efd(g.exc.smppi_idx,k) < g.exc.exc_pot(g.exc.smppi_idx,1));
+        Se(lowVE_indx) = zeros(length(lowVE_indx),1);
 
         g.exc.dEfd(g.exc.smppi_idx,k) = ...
             (g.exc.V_R(g.exc.smppi_idx,k)-g.exc.exc_con(g.exc.smppi_idx,18).*g.mac.fldcur(n,k)-(g.exc.exc_con(g.exc.smppi_idx,10)+Se).*g.exc.Efd(g.exc.smppi_idx,k)) ...
