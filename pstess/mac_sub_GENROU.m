@@ -267,9 +267,10 @@ if (g.mac.n_sub ~= 0 && i == 0)
         % psipp
         g.mac.psipp(g.mac.mac_sub_idx,1) = ....
             sqrt(g.mac.psidpp(g.mac.mac_sub_idx,1).^2 + g.mac.psiqpp(g.mac.mac_sub_idx,1).^2);
-        % Se
-        g.mac.Se(g.mac.mac_sub_idx,1) = 0.0;
-
+        
+        % % Se
+        % g.mac.Se(g.mac.mac_sub_idx,1) = 0.0; % TODO fix
+        
 %         % q axis voltage behind resistance
 %         eqra = g.mac.eq(g.mac.mac_sub_idx,1) ...
 %                + g.mac.mac_con(g.mac.mac_sub_idx,5) ...
@@ -336,6 +337,10 @@ if (g.mac.n_sub ~= 0 && i == 0)
         % Exponential
 %         g.mac.mac_pot(g.mac.mac_sub_idx,5) = g.mac.mac_con(g.mac.mac_sub_idx,20);
 %         g.mac.mac_pot(g.mac.mac_sub_idx,4) = log(g.mac.mac_con(g.mac.mac_sub_idx,21)./g.mac.mac_con(g.mac.mac_sub_idx,20))./log(1.2);
+        
+        % zero A and B if psipp < A 
+        lowPSIPP_indx = find(g.mac.psipp(g.mac.mac_sub_idx,1) < g.mac.mac_pot(g.mac.mac_sub_idx,4));
+        g.mac.mac_pot(g.mac.mac_sub_idx(lowPSIPP_indx),5) = zeros(length(lowPSIPP_indx),1);
 
         % Se
         g.mac.Se(g.mac.mac_sub_idx,1) = g.mac.mac_pot(g.mac.mac_sub_idx,5).*(g.mac.psipp(g.mac.mac_sub_idx,1) - g.mac.mac_pot(g.mac.mac_sub_idx,4)).^2;
@@ -543,6 +548,24 @@ if (g.mac.n_sub ~= 0 && i == 0)
         g.mac.psi_im(g.mac.mac_sub_idx,1) = ...
             -cos(g.mac.mac_ang(g.mac.mac_sub_idx,1)).*(-g.mac.psiqpp(g.mac.mac_sub_idx,1)) ...
             + sin(g.mac.mac_ang(g.mac.mac_sub_idx,1)).*g.mac.psidpp(g.mac.mac_sub_idx,1);
+        
+        % Resolve for A and B (because some had to be zero'd for low psipp
+        % init
+        % Quadratic
+        g.mac.mac_pot(g.mac.mac_sub_idx,3) = sqrt(g.mac.mac_con(g.mac.mac_sub_idx,20)./g.mac.mac_con(g.mac.mac_sub_idx,21));
+        g.mac.mac_pot(g.mac.mac_sub_idx,4) = (1.2.*g.mac.mac_pot(g.mac.mac_sub_idx,3)-1)./(g.mac.mac_pot(g.mac.mac_sub_idx,3)-1); %A
+        g.mac.mac_pot(g.mac.mac_sub_idx,5) = g.mac.mac_con(g.mac.mac_sub_idx,20)./(1-g.mac.mac_pot(g.mac.mac_sub_idx,4)).^2; %B
+
+        % get rid of nan and inf A and B cause by zeros for S1 and S12
+        An_indx = find(isnan(g.mac.mac_pot(g.mac.mac_sub_idx,4)));
+        g.mac.mac_pot(g.mac.mac_sub_idx(An_indx),4) = zeros(length(An_indx),1);
+        Ai_indx = find(isinf(g.mac.mac_pot(g.mac.mac_sub_idx,4)));
+        g.mac.mac_pot(g.mac.mac_sub_idx(Ai_indx),4) = zeros(length(Ai_indx),1);
+
+        Bn_indx = find(isnan(g.mac.mac_pot(g.mac.mac_sub_idx,5)));
+        g.mac.mac_pot(g.mac.mac_sub_idx(Bn_indx),5) = zeros(length(Bn_indx),1);
+        Bi_indx = find(isinf(g.mac.mac_pot(g.mac.mac_sub_idx,5)));
+        g.mac.mac_pot(g.mac.mac_sub_idx(Bi_indx),5) = zeros(length(Bi_indx),1);
 
         % end initialization
     end
@@ -569,6 +592,10 @@ if (g.mac.n_sub ~= 0 && i == 0)
         
         g.mac.Se(g.mac.mac_sub_idx,k) = ...
             g.mac.mac_pot(g.mac.mac_sub_idx,5).*(g.mac.psipp(g.mac.mac_sub_idx,k) - g.mac.mac_pot(g.mac.mac_sub_idx,4)).^2;
+        
+        % zero Se if psipp < A 
+        lowPSIPP_indx = find(g.mac.psipp(g.mac.mac_sub_idx,k) < g.mac.mac_pot(g.mac.mac_sub_idx,4));
+        g.mac.Se(g.mac.mac_sub_idx(lowPSIPP_indx),k) = zeros(length(lowPSIPP_indx),1);
 
         g.mac.curd(g.mac.mac_sub_idx,k) = ...
             sin(g.mac.mac_ang(g.mac.mac_sub_idx,k)) ...
@@ -626,9 +653,13 @@ if (g.mac.n_sub ~= 0 && i == 0)
 
         g.mac.psipp(g.mac.mac_sub_idx,k) = ...
             sqrt(g.mac.psidpp(g.mac.mac_sub_idx,k).^2 + g.mac.psiqpp(g.mac.mac_sub_idx,k).^2);
-        
+
         g.mac.Se(g.mac.mac_sub_idx,k) = ...
             g.mac.mac_pot(g.mac.mac_sub_idx,5).*(g.mac.psipp(g.mac.mac_sub_idx,k) - g.mac.mac_pot(g.mac.mac_sub_idx,4)).^2;
+        
+        % zero Se if psipp < A 
+        lowPSIPP_indx = find(g.mac.psipp(g.mac.mac_sub_idx,k) < g.mac.mac_pot(g.mac.mac_sub_idx,4));
+        g.mac.Se(g.mac.mac_sub_idx(lowPSIPP_indx),k) = zeros(length(lowPSIPP_indx),1);
 
         g.mac.curd(g.mac.mac_sub_idx,k) = ...
             sin(g.mac.mac_ang(g.mac.mac_sub_idx,k)) ...
